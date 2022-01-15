@@ -9,6 +9,8 @@ BAD = '⬛'
 MISPLACED = '🟨'
 GOOD = '🟩'
 
+LINEBREAK = '\n'
+
 bads       = [5, 3, 2, 1, 1, 0]
 misplaceds = [0, 2, 2, 1, 0, 0]
 goods      = [0, 0, 1, 3, 4, 5]
@@ -19,20 +21,19 @@ PUZZLE_1_DATE = PUZZLE_210_DATE - timedelta(days=210)
 def twitter_share_button(txt):
     components.html(
         f"""
-            <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" 
-            data-text="{txt}" 
-            data-show-count="false">
-            data-size="Large" 
-            data-hashtags="wordle"
-            Tweet this cheet
-            </a>
-            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        <a href="https://twitter.com/intent/tweet"
+                data-text="{txt}"
+                data-url=" "
+                class="twitter-share-button">
+                Tweet
+        </a>
+        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
         """
     )
 
-def suffix(dt, num_guesses):
+def prefix(dt, num_guesses):
     puzzle_num = (dt - PUZZLE_1_DATE).days
-    return f'Wordle {puzzle_num} {num_guesses}/6\n'
+    return f'Wordle {puzzle_num} {num_guesses}/6'
 
 def shuffle_string(s):
     return ''.join(random.sample(s, len(s)))
@@ -54,7 +55,7 @@ def wordle_curdle(smartness, puzzle_date):
         raise Exception(f'smartness argument must be one of {smartness_scale}')
     num_guesses = 6 - smarts_index
     guesses = [make_guess(guess_index, num_guesses) for guess_index in range(num_guesses)]
-    return suffix(puzzle_date, num_guesses) + '\n'.join(guesses)
+    return prefix(puzzle_date, num_guesses) + LINEBREAK + LINEBREAK.join(guesses)
 
 st.title('Wordle Curdle')
 st.caption('Create a fake Wordle score because you are dishonest')
@@ -69,5 +70,7 @@ puzzle_date = st.date_input(
 
 score = wordle_curdle(smartness, puzzle_date)
 st.text_area(label='Here\'s your Wordle score, you big cheat:', height=150, value=score)
+st.caption('Tweet it if you like to lie in public')
 twitter_share_button(score)
+
 
